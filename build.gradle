@@ -44,7 +44,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.example.astroidsfxgl.MainApp'
+    mainClass = 'com.example.asteroidsfxgl.MainApp'
 }
 
 spotless {
