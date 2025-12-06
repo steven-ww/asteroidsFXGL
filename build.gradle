@@ -1,0 +1,55 @@
+plugins {
+    id 'application'
+    id 'java'
+    id 'com.diffplug.spotless' version '8.1.0'
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+// JavaFX platform and version, chosen per host OS/architecture
+// Classifiers used by JavaFX 21: "win", "mac", "mac-aarch64", "linux", "linux-aarch64"
+def javaFxVersion = '21.0.1'
+
+def os = org.gradle.internal.os.OperatingSystem.current()
+def javaFxPlatform
+if (os.isMacOsX()) {
+    // Distinguish Intel vs Apple Silicon
+    javaFxPlatform = System.getProperty('os.arch') == 'aarch64' ? 'mac-aarch64' : 'mac'
+} else if (os.isWindows()) {
+    // Windows desktop (non-ARM)
+    javaFxPlatform = 'win'
+} else {
+    // Default to Linux desktop; optionally refine for aarch64 if needed
+    javaFxPlatform = 'linux'
+}
+
+dependencies {
+    // JavaFX modules for macOS ARM64 so that natives match your arm64 JDK
+    implementation "org.openjfx:javafx-base:${javaFxVersion}:${javaFxPlatform}"
+    implementation "org.openjfx:javafx-graphics:${javaFxVersion}:${javaFxPlatform}"
+    implementation "org.openjfx:javafx-controls:${javaFxVersion}:${javaFxPlatform}"
+    implementation "org.openjfx:javafx-media:${javaFxVersion}:${javaFxPlatform}"
+
+    // FXGL game engine
+    implementation 'com.github.almasb:fxgl:21.1'
+}
+
+application {
+    mainClass = 'com.example.astroidsfxgl.MainApp'
+}
+
+spotless {
+    java {
+        target 'src/**/*.java'
+        googleJavaFormat()
+    }
+}
