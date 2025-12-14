@@ -65,7 +65,7 @@ public class MainApp extends GameApplication {
             FXGL.inc("pixelsMoved", +5);
           }
         },
-        KeyCode.D);
+        KeyCode.D); 
 
     input.addAction(
         new UserAction("Move Left") {
