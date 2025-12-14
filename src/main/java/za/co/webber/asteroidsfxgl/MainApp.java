@@ -9,9 +9,7 @@ import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import java.util.Map;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 public class MainApp extends GameApplication {
@@ -38,19 +36,21 @@ public class MainApp extends GameApplication {
 
   @Override
   protected void initGame() {
-//    player =
-//        FXGL.entityBuilder().at(300, 300).view(new Rectangle(25, 25, Color.BLUE)).buildAndAttach();
+    //    player =
+    //        FXGL.entityBuilder().at(300, 300).view(new Rectangle(25, 25,
+    // Color.BLUE)).buildAndAttach();
 
-      player = FXGL.entityBuilder()
-              .at(640, 360)
-              .view(new Polygon(
-                      0.0, -10.0,   // top point
-                      7.5, 10.0,    // bottom right
-                      -7.5, 10.0    // bottom left
-              ))
-              .with(new CollidableComponent(true))
-              .buildAndAttach();
-
+    player =
+        FXGL.entityBuilder()
+            .at(640, 360)
+            .view(
+                new Polygon(
+                    0.0, -10.0, // top point
+                    7.5, 10.0, // bottom right
+                    -7.5, 10.0 // bottom left
+                    ))
+            .with(new CollidableComponent(true))
+            .buildAndAttach();
   }
 
   @Override
@@ -72,40 +72,37 @@ public class MainApp extends GameApplication {
           @Override
           protected void onAction() {
             player.translateX(-5); // move left 5 pixels
-              FXGL.inc("pixelsMoved", +5);
-
+            FXGL.inc("pixelsMoved", +5);
           }
         },
         KeyCode.A);
 
-      input.addAction(
-              new UserAction("Turn Left") {
-                  @Override
-                  protected void onAction() {
-                      player.rotateBy(2.5); // move left 5 pixels
-                      FXGL.inc("pixelsMoved", +5);
+    input.addAction(
+        new UserAction("Turn Left") {
+          @Override
+          protected void onAction() {
+            player.rotateBy(2.5); // move left 5 pixels
+            FXGL.inc("pixelsMoved", +5);
+          }
+        },
+        KeyCode.E);
 
-                  }
-              },
-              KeyCode.E);
-
-      input.addAction(
-              new UserAction("Turn Right") {
-                  @Override
-                  protected void onAction() {
-                      player.rotateBy(-2.5); // move left 5 pixels
-                      FXGL.inc("pixelsMoved", +5);
-
-                  }
-              },
-              KeyCode.Q);
+    input.addAction(
+        new UserAction("Turn Right") {
+          @Override
+          protected void onAction() {
+            player.rotateBy(-2.5); // move left 5 pixels
+            FXGL.inc("pixelsMoved", +5);
+          }
+        },
+        KeyCode.Q);
 
     input.addAction(
         new UserAction("Move Down") {
           @Override
           protected void onAction() {
-            player.translateY(5);// move down 5 pixels
-              FXGL.inc("pixelsMoved", +5);
+            player.translateY(5); // move down 5 pixels
+            FXGL.inc("pixelsMoved", +5);
           }
         },
         KeyCode.S);
@@ -115,7 +112,7 @@ public class MainApp extends GameApplication {
           @Override
           protected void onAction() {
             player.translateY(-5); // move up 5 pixels
-              FXGL.inc("pixelsMoved", +5);
+            FXGL.inc("pixelsMoved", +5);
           }
         },
         KeyCode.W);
