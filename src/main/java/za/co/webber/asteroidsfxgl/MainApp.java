@@ -7,6 +7,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import java.util.Map;
 import javafx.scene.input.KeyCode;
 import javafx.scene.shape.Polygon;
@@ -15,6 +16,7 @@ import javafx.scene.text.Text;
 public class MainApp extends GameApplication {
 
   private Entity player;
+  PhysicsComponent physicsComponent = new PhysicsComponent();
 
   @Override
   protected void initSettings(GameSettings settings) {
@@ -50,6 +52,7 @@ public class MainApp extends GameApplication {
                     -7.5, 10.0 // bottom left
                     ))
             .with(new CollidableComponent(true))
+//            .with(physicsComponent)
             .buildAndAttach();
   }
 
@@ -111,8 +114,20 @@ public class MainApp extends GameApplication {
         new UserAction("Move Up") {
           @Override
           protected void onAction() {
-            player.translateY(-5); // move up 5 pixels
+            //            player.translateY(-5); // move up 5 pixels
+            double angle = player.getRotation();
+            // If the art points up, adjust:
+            angle -= 90;
+            double speed = 200; // pixels per second
+            double vx = com.almasb.fxgl.core.math.FXGLMath.cosDeg(angle) * speed;
+            double vy = com.almasb.fxgl.core.math.FXGLMath.sinDeg(angle) * speed;
+            physicsComponent.setLinearVelocity(vx, vy);
             FXGL.inc("pixelsMoved", +5);
+          }
+
+          @Override
+          protected void onActionEnd() {
+            physicsComponent.setLinearVelocity(0, 0); // stop when key released
           }
         },
         KeyCode.W);
