@@ -1,4 +1,4 @@
-package com.example.asteroidsfxgl;
+package za.co.webber.asteroidsfxgl;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
