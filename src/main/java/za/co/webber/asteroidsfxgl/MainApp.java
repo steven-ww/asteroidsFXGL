@@ -19,7 +19,6 @@ public class MainApp extends GameApplication {
   private Entity player;
   private Vec2 velocity = new Vec2(0, 0);
 
-
   @Override
   protected void initSettings(GameSettings settings) {
     settings.setTitle("Astroids FXGL");
@@ -88,9 +87,7 @@ public class MainApp extends GameApplication {
 
             Vec2 thrust = Vec2.fromAngle(player.getRotation() - 90).mulLocal(0.15);
             velocity = velocity.add(thrust);
-
           }
-
         },
         KeyCode.W);
   }
