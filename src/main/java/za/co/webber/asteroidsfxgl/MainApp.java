@@ -2,21 +2,23 @@ package za.co.webber.asteroidsfxgl;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import java.util.Map;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 
 public class MainApp extends GameApplication {
 
   private Entity player;
-  PhysicsComponent physicsComponent = new PhysicsComponent();
+
+  //  PhysicsComponent physicsComponent = new PhysicsComponent();
 
   @Override
   protected void initSettings(GameSettings settings) {
@@ -33,26 +35,27 @@ public class MainApp extends GameApplication {
     textPixels.textProperty().bind(FXGL.getWorldProperties().intProperty("pixelsMoved").asString());
 
     FXGL.getGameScene().addUINode(textPixels); // add to the scene graph
-    //    FXGL.getGameScene().setBackgroundColor(Color.BLACK);
+    FXGL.getGameScene().setBackgroundColor(Color.BLACK);
   }
 
   @Override
   protected void initGame() {
-    //    player =
-    //        FXGL.entityBuilder().at(300, 300).view(new Rectangle(25, 25,
-    // Color.BLUE)).buildAndAttach();
+
+    Polygon ship =
+        new Polygon(
+            0.0, -10.0, // top point
+            7.5, 10.0, // bottom right
+            -7.5, 10.0 // bottom left
+            );
+    ship.setFill(javafx.scene.paint.Color.TRANSPARENT); // no fill
+    ship.setStroke(javafx.scene.paint.Color.WHITE); // outline color
+    ship.setStrokeWidth(2);
 
     player =
         FXGL.entityBuilder()
             .at(640, 360)
-            .view(
-                new Polygon(
-                    0.0, -10.0, // top point
-                    7.5, 10.0, // bottom right
-                    -7.5, 10.0 // bottom left
-                    ))
+            .view(ship)
             .with(new CollidableComponent(true))
-//            .with(physicsComponent)
             .buildAndAttach();
   }
 
@@ -61,74 +64,38 @@ public class MainApp extends GameApplication {
     Input input = FXGL.getInput();
 
     input.addAction(
-        new UserAction("Move Right") {
-          @Override
-          protected void onAction() {
-            player.translateX(5); // move right 5 pixels
-            FXGL.inc("pixelsMoved", +5);
-          }
-        },
-        KeyCode.D);
-
-    input.addAction(
-        new UserAction("Move Left") {
-          @Override
-          protected void onAction() {
-            player.translateX(-5); // move left 5 pixels
-            FXGL.inc("pixelsMoved", +5);
-          }
-        },
-        KeyCode.A);
-
-    input.addAction(
         new UserAction("Turn Left") {
           @Override
           protected void onAction() {
             player.rotateBy(2.5); // move left 5 pixels
-            FXGL.inc("pixelsMoved", +5);
           }
         },
-        KeyCode.E);
+        KeyCode.D);
 
     input.addAction(
         new UserAction("Turn Right") {
           @Override
           protected void onAction() {
             player.rotateBy(-2.5); // move left 5 pixels
-            FXGL.inc("pixelsMoved", +5);
           }
         },
-        KeyCode.Q);
+        KeyCode.A);
 
     input.addAction(
-        new UserAction("Move Down") {
+        new UserAction("Move") {
           @Override
           protected void onAction() {
-            player.translateY(5); // move down 5 pixels
-            FXGL.inc("pixelsMoved", +5);
-          }
-        },
-        KeyCode.S);
 
-    input.addAction(
-        new UserAction("Move Up") {
-          @Override
-          protected void onAction() {
-            //            player.translateY(-5); // move up 5 pixels
-            double angle = player.getRotation();
-            // If the art points up, adjust:
-            angle -= 90;
-            double speed = 200; // pixels per second
-            double vx = com.almasb.fxgl.core.math.FXGLMath.cosDeg(angle) * speed;
-            double vy = com.almasb.fxgl.core.math.FXGLMath.sinDeg(angle) * speed;
-            physicsComponent.setLinearVelocity(vx, vy);
+            Vec2 dir = Vec2.fromAngle(player.getRotation() - 90).mulLocal(4);
+            player.translate(dir);
+
             FXGL.inc("pixelsMoved", +5);
           }
 
-          @Override
-          protected void onActionEnd() {
-            physicsComponent.setLinearVelocity(0, 0); // stop when key released
-          }
+          //          @Override
+          //          protected void onActionEnd() {
+          //            physicsComponent.setLinearVelocity(0, 0); // stop when key released
+          //          }
         },
         KeyCode.W);
   }
