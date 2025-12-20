@@ -17,8 +17,8 @@ import javafx.scene.text.Text;
 public class MainApp extends GameApplication {
 
   private Entity player;
+  private Vec2 velocity = new Vec2(0, 0);
 
-  //  PhysicsComponent physicsComponent = new PhysicsComponent();
 
   @Override
   protected void initSettings(GameSettings settings) {
@@ -82,20 +82,15 @@ public class MainApp extends GameApplication {
         KeyCode.A);
 
     input.addAction(
-        new UserAction("Move") {
+        new UserAction("Thrust") {
           @Override
           protected void onAction() {
 
-            Vec2 dir = Vec2.fromAngle(player.getRotation() - 90).mulLocal(4);
-            player.translate(dir);
+            Vec2 thrust = Vec2.fromAngle(player.getRotation() - 90).mulLocal(0.15);
+            velocity = velocity.add(thrust);
 
-            FXGL.inc("pixelsMoved", +5);
           }
 
-          //          @Override
-          //          protected void onActionEnd() {
-          //            physicsComponent.setLinearVelocity(0, 0); // stop when key released
-          //          }
         },
         KeyCode.W);
   }
@@ -103,6 +98,11 @@ public class MainApp extends GameApplication {
   @Override
   protected void initGameVars(Map<String, Object> vars) {
     vars.put("pixelsMoved", 0);
+  }
+
+  @Override
+  public void onUpdate(double tpf) {
+    player.translate(velocity);
   }
 
   public static void main(String[] args) {
