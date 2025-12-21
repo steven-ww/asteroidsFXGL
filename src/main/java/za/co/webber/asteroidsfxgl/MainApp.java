@@ -12,12 +12,19 @@ import java.util.Map;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
 
 public class MainApp extends GameApplication {
 
   private Entity player;
   private Vec2 velocity = new Vec2(0, 0);
+
+  Polyline thrustFlame =
+      new Polyline(
+          -3.0, 12.0,
+          0.0, 18.0,
+          3.0, 12.0);
 
   @Override
   protected void initSettings(GameSettings settings) {
@@ -50,12 +57,18 @@ public class MainApp extends GameApplication {
     ship.setStroke(javafx.scene.paint.Color.WHITE); // outline color
     ship.setStrokeWidth(2);
 
+    // Configure thrust flame appearance
+    thrustFlame.setStroke(Color.WHITE);
+
     player =
         FXGL.entityBuilder()
             .at(640, 360)
             .view(ship)
+            .view(thrustFlame)
             .with(new CollidableComponent(true))
             .buildAndAttach();
+
+    thrustFlame.setVisible(false);
   }
 
   @Override
@@ -85,8 +98,13 @@ public class MainApp extends GameApplication {
           @Override
           protected void onAction() {
 
-            Vec2 thrust = Vec2.fromAngle(player.getRotation() - 90).mulLocal(0.15);
+            Vec2 thrust = Vec2.fromAngle(player.getRotation() - 90).mulLocal(0.10);
             velocity = velocity.add(thrust);
+            thrustFlame.setVisible(true);
+          }
+
+          protected void onActionEnd() {
+            thrustFlame.setVisible(false);
           }
         },
         KeyCode.W);
