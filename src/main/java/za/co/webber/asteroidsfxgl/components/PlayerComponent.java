@@ -23,7 +23,7 @@ public class PlayerComponent extends Component {
   }
 
   public void thrustOn() {
-    Vec2 thrust = Vec2.fromAngle(entity.getRotation() - 90).mulLocal(0.10);
+    Vec2 thrust = Vec2.fromAngle(entity.getRotation() - 90).mulLocal(0.05);
     velocity.set(velocity.add(thrust));
     thrustFlame.setVisible(true);
   }
@@ -35,5 +35,16 @@ public class PlayerComponent extends Component {
   @Override
   public void onUpdate(double tpf) {
     entity.translate(velocity);
+    if (entity.getX() < 0) {
+      entity.setX(1280);
+    } else if (entity.getX() > 1280) {
+      entity.setX(0);
+    }
+
+    if (entity.getY() < 0) {
+      entity.setY(720);
+    } else if (entity.getY() > 720) {
+      entity.setY(0);
+    }
   }
 }
