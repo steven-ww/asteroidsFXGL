@@ -38,7 +38,7 @@ public class MainApp extends GameApplication {
   @Override
   protected void initGame() {
     FXGL.getGameWorld().addEntityFactory(new PlayerFactory());
-    Entity player = FXGL.spawn("player", 640, 360);
+    Entity player = FXGL.spawn("player", 640, 360); // 640 360
     playerComp = player.getComponent(PlayerComponent.class);
   }
 
