@@ -1,4 +1,4 @@
-package za.co.webber.asteroidsfxgl;
+package za.co.webber.asteroidsfxgl.components;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
@@ -9,6 +9,7 @@ import com.almasb.fxgl.entity.components.CollidableComponent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
+import za.co.webber.asteroidsfxgl.EntityType;
 
 public class PlayerFactory implements EntityFactory {
 

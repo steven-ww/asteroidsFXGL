@@ -1,4 +1,4 @@
-package za.co.webber.asteroidsfxgl;
+package za.co.webber.asteroidsfxgl.components;
 
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.entity.component.Component;

@@ -10,6 +10,8 @@ import java.util.Map;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import za.co.webber.asteroidsfxgl.components.PlayerComponent;
+import za.co.webber.asteroidsfxgl.components.PlayerFactory;
 
 public class MainApp extends GameApplication {
 
