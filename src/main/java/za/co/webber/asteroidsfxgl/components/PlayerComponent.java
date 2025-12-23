@@ -110,7 +110,11 @@ public class PlayerComponent extends Component {
       double spinDegPerSec,
       double lifeSeconds) {
     com.almasb.fxgl.entity.Entity frag =
-        com.almasb.fxgl.dsl.FXGL.entityBuilder()
+        com.almasb
+            .fxgl
+            .dsl
+            .FXGL
+            .entityBuilder()
             .type(za.co.webber.asteroidsfxgl.EntityType.PLAYER) // type not used for collisions here
             .at(entity.getX(), entity.getY())
             .view(view)
