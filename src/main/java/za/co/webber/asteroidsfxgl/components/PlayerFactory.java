@@ -7,15 +7,20 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Polyline;
+import javafx.scene.shape.*;
 import za.co.webber.asteroidsfxgl.EntityType;
 
 public class PlayerFactory implements EntityFactory {
 
   @Spawns("player")
   public Entity newPlayer(SpawnData data) {
-    Polygon ship = new Polygon(0.0, -10.0, 7.5, 10.0, -7.5, 10.0);
+    //    Polygon ship = new Polygon(0.0, -10.0, 7.5, 10.0, -7.5, 10.0);
+    Path ship =
+        new Path(
+            new MoveTo(0, -12), new LineTo(-8, 10), // left leg
+            new MoveTo(0, -12), new LineTo(8, 10), // right leg
+            new MoveTo(-7, 7), new LineTo(7, 7) // crossbar
+            );
     ship.setFill(Color.TRANSPARENT);
     ship.setStroke(Color.WHITE);
     ship.setStrokeWidth(2);
