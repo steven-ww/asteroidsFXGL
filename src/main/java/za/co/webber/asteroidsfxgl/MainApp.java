@@ -58,6 +58,11 @@ public class MainApp extends GameApplication {
                 // Visual feedback to confirm collision detection
                 FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
                 FXGL.getNotificationService().pushNotification("Ship hit!");
+                // Trigger ship explosion animation
+                PlayerComponent pc = player.getComponentOptional(PlayerComponent.class).orElse(null);
+                if (pc != null) {
+                  pc.explode();
+                }
               }
 
               @Override
