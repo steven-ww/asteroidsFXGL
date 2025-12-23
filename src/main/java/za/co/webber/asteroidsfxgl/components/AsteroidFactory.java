@@ -30,29 +30,52 @@ public class AsteroidFactory implements EntityFactory {
 
     return FXGL.entityBuilder(data)
         .type(EntityType.ASTEROID)
-        // Use explicit polygonal hit box that matches the rendered outline
+        // Use multiple convex hit boxes to approximate the concave asteroid outline
+        // (concave single polygons can cause missed contacts in collision systems that expect convex shapes)
         .view(rock)
+        // Top-Right convex section
         .bbox(
             new com.almasb.fxgl.physics.HitBox(
-                "asteroidBody",
+                "asteroidTR",
                 com.almasb.fxgl.physics.BoundingShape.polygon(
-                    // Same points as the rock outline (ordered clockwise)
-                    new javafx.geometry.Point2D(-26.0, -10.0),
-                    new javafx.geometry.Point2D(-20.0, -22.0),
-                    new javafx.geometry.Point2D(-8.0, -28.0),
                     new javafx.geometry.Point2D(6.0, -26.0),
                     new javafx.geometry.Point2D(18.0, -20.0),
                     new javafx.geometry.Point2D(28.0, -8.0),
                     new javafx.geometry.Point2D(26.0, 4.0),
                     new javafx.geometry.Point2D(26.0, 16.0),
                     new javafx.geometry.Point2D(16.0, 24.0),
-                    new javafx.geometry.Point2D(4.0, 26.0),
-                    new javafx.geometry.Point2D(-8.0, 24.0),
-                    new javafx.geometry.Point2D(-16.0, 18.0),
-                    new javafx.geometry.Point2D(-22.0, 10.0),
-                    new javafx.geometry.Point2D(-30.0, 2.0),
+                    new javafx.geometry.Point2D(4.0, 26.0)
+                )))
+        // Top-Left convex section
+        .bbox(
+            new com.almasb.fxgl.physics.HitBox(
+                "asteroidTL",
+                com.almasb.fxgl.physics.BoundingShape.polygon(
+                    new javafx.geometry.Point2D(-8.0, -28.0),
+                    new javafx.geometry.Point2D(-20.0, -22.0),
+                    new javafx.geometry.Point2D(-26.0, -10.0),
                     new javafx.geometry.Point2D(-28.0, -6.0),
-                    new javafx.geometry.Point2D(-24.0, -14.0))))
+                    new javafx.geometry.Point2D(-30.0, 2.0),
+                    new javafx.geometry.Point2D(-22.0, 10.0),
+                    new javafx.geometry.Point2D(-16.0, 18.0),
+                    new javafx.geometry.Point2D(-8.0, 24.0)
+                )))
+        // Bottom convex section (bridges the lower arc)
+        .bbox(
+            new com.almasb.fxgl.physics.HitBox(
+                "asteroidBottom",
+                com.almasb.fxgl.physics.BoundingShape.polygon(
+                    new javafx.geometry.Point2D(-16.0, 18.0),
+                    new javafx.geometry.Point2D(-8.0, 24.0),
+                    new javafx.geometry.Point2D(4.0, 26.0),
+                    new javafx.geometry.Point2D(16.0, 24.0),
+                    new javafx.geometry.Point2D(26.0, 16.0),
+                    new javafx.geometry.Point2D(26.0, 4.0),
+                    new javafx.geometry.Point2D(18.0, -20.0),
+                    new javafx.geometry.Point2D(6.0, -26.0),
+                    new javafx.geometry.Point2D(-8.0, -28.0),
+                    new javafx.geometry.Point2D(-20.0, -22.0)
+                )))
         .with(new CollidableComponent(true))
         .with(new AsteroidComponent())
         .build();
