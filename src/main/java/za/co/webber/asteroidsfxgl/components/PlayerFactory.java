@@ -24,6 +24,7 @@ public class PlayerFactory implements EntityFactory {
     ship.setFill(Color.TRANSPARENT);
     ship.setStroke(Color.WHITE);
     ship.setStrokeWidth(2);
+    ship.setStrokeLineCap(StrokeLineCap.ROUND);
 
     Polyline flame = new Polyline(-3.0, 12.0, 0.0, 18.0, 3.0, 12.0);
     flame.setStroke(Color.WHITE);
