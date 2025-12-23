@@ -31,7 +31,16 @@ public class PlayerFactory implements EntityFactory {
 
     return FXGL.entityBuilder(data)
         .type(EntityType.PLAYER)
+        // Use explicit polygonal hit box for accurate collisions (single convex approximation)
         .view(ship)
+        .bbox(
+            new com.almasb.fxgl.physics.HitBox(
+                "playerBody",
+                com.almasb.fxgl.physics.BoundingShape.polygon(
+                    // Triangle hull approximating the "A" outline
+                    new javafx.geometry.Point2D(0, -12),
+                    new javafx.geometry.Point2D(8, 10),
+                    new javafx.geometry.Point2D(-8, 10))))
         .view(flame)
         .with(new CollidableComponent(true))
         .with(new PlayerComponent(flame))
