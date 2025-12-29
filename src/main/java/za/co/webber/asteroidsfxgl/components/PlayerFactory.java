@@ -32,6 +32,7 @@ public class PlayerFactory implements EntityFactory {
         .type(EntityType.PLAYER)
         .viewWithBBox(ship)
         .view(flame)
+        .rotationOrigin(0, 0) // Set rotation origin to center of coordinates (nose of ship)
         .with(new CollidableComponent(true))
         .with(new PlayerComponent(flame))
         .build();
