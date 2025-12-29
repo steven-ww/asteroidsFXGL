@@ -2,6 +2,7 @@ package za.co.webber.asteroidsfxgl.components;
 
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.entity.component.Component;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -21,6 +22,23 @@ public class PlayerComponent extends Component {
   public PlayerComponent(Polyline thrustFlame) {
     this.thrustFlame = thrustFlame;
     this.thrustFlame.setVisible(false);
+  }
+
+  public Point2D getNosePosition(double distance) {
+    // Entity rotation origin is set to (0,0) in the factory (the ship nose),
+    // so use the entity position (the rotation origin) + rotated local offset.
+    Point2D localNose = new Point2D(0, -distance);
+    double ang = Math.toRadians(entity.getRotation());
+    Point2D rotated = rotate(localNose, ang);
+    return entity.getPosition().add(rotated);
+  }
+
+  public Vec2 getVelocity() {
+    return velocity;
+  }
+
+  public double getRotation() {
+    return entity.getRotation();
   }
 
   public void turnLeft() {
