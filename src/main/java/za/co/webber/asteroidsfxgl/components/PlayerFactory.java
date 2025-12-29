@@ -14,7 +14,6 @@ public class PlayerFactory implements EntityFactory {
 
   @Spawns("player")
   public Entity newPlayer(SpawnData data) {
-    //    Polygon ship = new Polygon(0.0, -10.0, 7.5, 10.0, -7.5, 10.0);
     Path ship =
         new Path(
             new MoveTo(0, -12), new LineTo(-8, 10), // left leg
@@ -31,16 +30,7 @@ public class PlayerFactory implements EntityFactory {
 
     return FXGL.entityBuilder(data)
         .type(EntityType.PLAYER)
-        // Use explicit polygonal hit box for accurate collisions (single convex approximation)
-        .view(ship)
-        .bbox(
-            new com.almasb.fxgl.physics.HitBox(
-                "playerBody",
-                com.almasb.fxgl.physics.BoundingShape.polygon(
-                    // Triangle hull approximating the "A" outline
-                    new javafx.geometry.Point2D(0, -12),
-                    new javafx.geometry.Point2D(8, 10),
-                    new javafx.geometry.Point2D(-8, 10))))
+        .viewWithBBox(ship)
         .view(flame)
         .with(new CollidableComponent(true))
         .with(new PlayerComponent(flame))
