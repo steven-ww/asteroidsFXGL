@@ -1,5 +1,8 @@
 package za.co.webber.asteroidsfxgl;
 
+import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawLives;
+import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawScore;
+
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
@@ -18,6 +21,8 @@ import za.co.webber.asteroidsfxgl.components.PlayerFactory;
 public class MainApp extends GameApplication {
 
   private PlayerComponent playerComp;
+  private int playerLives = 3;
+  private int score = 0;
 
   @Override
   protected void initSettings(GameSettings settings) {
@@ -43,6 +48,8 @@ public class MainApp extends GameApplication {
     FXGL.getGameWorld().addEntityFactory(new AsteroidFactory());
     Entity player = FXGL.spawn("player", 640, 360); // 640 360
     playerComp = player.getComponent(PlayerComponent.class);
+    drawLives(playerLives);
+    drawScore(score);
 
     // spawn a large asteroid off-screen drifting inward
     spawnLargeAsteroidOffscreen();
@@ -55,15 +62,18 @@ public class MainApp extends GameApplication {
             new CollisionHandler(EntityType.PLAYER, EntityType.ASTEROID) {
               @Override
               protected void onCollisionBegin(Entity player, Entity asteroid) {
-                // Visual feedback to confirm collision detection
-                FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
-                FXGL.getNotificationService().pushNotification("Ship hit!");
-                // Trigger ship explosion animation
-                PlayerComponent pc =
-                    player.getComponentOptional(PlayerComponent.class).orElse(null);
-                if (pc != null) {
-                  pc.explode();
+                PlayerComponent pc = player.getComponent(PlayerComponent.class);
+
+                // Ignore collision during invincibility
+                if (pc.isInvincible()) {
+                  return;
                 }
+
+                //                // Visual feedback to confirm collision detection
+                //                FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
+                lifeLost(pc);
+                // Trigger ship explosion animation
+
               }
 
               @Override
@@ -72,6 +82,23 @@ public class MainApp extends GameApplication {
                 FXGL.getGameScene().setBackgroundColor(Color.BLACK);
               }
             });
+  }
+
+  private void lifeLost(PlayerComponent playerComp) {
+    playerComp.explode();
+    playerLives--;
+    drawLives(playerLives);
+
+    if (playerLives > 0) {
+      // Respawn after explosion animation (1.5 seconds to match fragment lifetime)
+      FXGL.runOnce(
+          () -> {
+            playerComp.respawn(640, 360); // Center of screen
+          },
+          javafx.util.Duration.seconds(1.5));
+    } else {
+      FXGL.getNotificationService().pushNotification("Game Over!");
+    }
   }
 
   @Override

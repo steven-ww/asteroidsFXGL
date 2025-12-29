@@ -1,0 +1,78 @@
+package za.co.webber.asteroidsfxgl.hud;
+
+import com.almasb.fxgl.dsl.FXGL;
+import java.util.List;
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+public class HudDisplay {
+
+  private static final int HUD_MARGIN = 20;
+
+  public static Path createMiniShip(double scale) {
+    Path miniShip =
+        new Path(
+            new MoveTo(0, -12),
+            new LineTo(-8, 10),
+            new MoveTo(0, -12),
+            new LineTo(8, 10),
+            new MoveTo(-7, 7),
+            new LineTo(7, 7));
+
+    miniShip.setStroke(Color.WHITE);
+    miniShip.setStrokeWidth(1.0);
+    miniShip.setFill(null);
+
+    miniShip.setScaleX(scale);
+    miniShip.setScaleY(scale);
+
+    return miniShip;
+  }
+
+  public static void drawLives(int lives) {
+    var ui = FXGL.getGameScene();
+
+    // Clear old icons (important when lives change)
+    List<Node> toRemove =
+        ui.getUINodes().stream().filter(n -> "LIFE".equals(n.getUserData())).toList();
+
+    toRemove.forEach(ui::removeUINode);
+
+    for (int i = 0; i < lives - 1; i++) { // do NOT show current ship
+      Path miniShip = createMiniShip(0.6);
+
+      miniShip.setTranslateX(HUD_MARGIN + i * 15);
+      miniShip.setTranslateY(HUD_MARGIN + 40); // Pushed down slightly
+
+      miniShip.setUserData("LIFE"); // tag for easy removal
+      ui.addUINode(miniShip);
+    }
+  }
+
+  public static void drawScore(int score) {
+    var ui = FXGL.getGameScene();
+
+    // Clear old score display
+    List<Node> toRemove =
+        ui.getUINodes().stream().filter(n -> "SCORE".equals(n.getUserData())).toList();
+
+    toRemove.forEach(ui::removeUINode);
+
+    // Create score text in classic arcade style
+    Text scoreText = new Text(String.format("%02d", score));
+    scoreText.setFill(Color.WHITE);
+    scoreText.setFont(Font.font("Monospaced", 24));
+
+    // Position in upper left above the lives, like the original game
+    scoreText.setTranslateX(HUD_MARGIN);
+    scoreText.setTranslateY(HUD_MARGIN + 15);
+
+    scoreText.setUserData("SCORE");
+    ui.addUINode(scoreText);
+  }
+}
