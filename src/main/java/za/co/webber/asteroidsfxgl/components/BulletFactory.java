@@ -20,11 +20,20 @@ public class BulletFactory {
     bulletView.setStroke(Color.WHITE);
     bulletView.setStrokeWidth(2);
 
-    return FXGL.entityBuilder()
-        .at(position)
-        .view(bulletView)
-        .with(new BulletComponent(direction, shipVelocity))
-        .collidable()
-        .build();
+    com.almasb.fxgl.entity.Entity bullet =
+        com.almasb.fxgl.dsl.FXGL
+            .entityBuilder()
+            .type(za.co.webber.asteroidsfxgl.EntityType.BULLET)
+            .at(position)
+            .viewWithBBox(bulletView)
+            .with(new BulletComponent(direction, shipVelocity))
+            .build();
+
+    // Rotate the bullet to match the ship orientation so the visual points the same way.
+    // If your bullet view points up by default, use shipRotation (no change).
+    // If it points right or another direction, adjust by +/-90 accordingly, e.g. shipRotation - 90.
+    bullet.setRotation(rotation);
+
+    return bullet;
   }
 }
