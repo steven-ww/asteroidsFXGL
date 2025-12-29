@@ -1,6 +1,5 @@
 package za.co.webber.asteroidsfxgl.components;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
@@ -21,7 +20,10 @@ public class BulletFactory {
     bulletView.setStrokeWidth(2);
 
     com.almasb.fxgl.entity.Entity bullet =
-        com.almasb.fxgl.dsl.FXGL
+        com.almasb
+            .fxgl
+            .dsl
+            .FXGL
             .entityBuilder()
             .type(za.co.webber.asteroidsfxgl.EntityType.BULLET)
             .at(position)

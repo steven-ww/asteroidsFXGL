@@ -19,8 +19,26 @@ public class BulletComponent extends Component {
 
   @Override
   public void onUpdate(double tpf) {
+    // Move bullet
     entity.translate(velocity.multiply(tpf));
 
+    // Wrap around screen edges (mirror player's wrapping behavior)
+    double w = com.almasb.fxgl.dsl.FXGL.getAppWidth();
+    double h = com.almasb.fxgl.dsl.FXGL.getAppHeight();
+
+    if (entity.getX() < 0) {
+      entity.setX(w);
+    } else if (entity.getX() > w) {
+      entity.setX(0);
+    }
+
+    if (entity.getY() < 0) {
+      entity.setY(h);
+    } else if (entity.getY() > h) {
+      entity.setY(0);
+    }
+
+    // Lifetime handling
     life += tpf;
     if (life > LIFETIME) {
       entity.removeFromWorld();
