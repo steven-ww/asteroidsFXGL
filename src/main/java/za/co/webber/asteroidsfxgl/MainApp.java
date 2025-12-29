@@ -5,16 +5,19 @@ import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawScore;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import java.util.Map;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import za.co.webber.asteroidsfxgl.components.AsteroidFactory;
+import za.co.webber.asteroidsfxgl.components.BulletFactory;
 import za.co.webber.asteroidsfxgl.components.PlayerComponent;
 import za.co.webber.asteroidsfxgl.components.PlayerFactory;
 
@@ -135,6 +138,31 @@ public class MainApp extends GameApplication {
           }
         },
         KeyCode.W);
+
+    FXGL.getInput()
+        .addAction(
+            new UserAction("Shoot") {
+              @Override
+              protected void onActionBegin() {
+
+                // Get ship position & rotation
+                Point2D bulletSpawn = playerComp.getNosePosition(14);
+                //        Point2D shipPos = playerComp.getCenter();
+                double rotation = playerComp.getRotation();
+
+                // Get ship velocity if you have one
+                Vec2 shipVelocityVec = playerComp.getVelocity();
+                Point2D shipVelocity = new Point2D(shipVelocityVec.x, shipVelocityVec.y);
+
+                Entity bullet =
+                    BulletFactory.spawnBullet(
+                        //                shipPos,
+                        bulletSpawn, rotation, shipVelocity);
+
+                FXGL.getGameWorld().addEntity(bullet);
+              }
+            },
+            KeyCode.SPACE);
   }
 
   @Override

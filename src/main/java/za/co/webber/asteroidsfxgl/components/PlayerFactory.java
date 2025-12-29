@@ -20,6 +20,7 @@ public class PlayerFactory implements EntityFactory {
             new MoveTo(0, -12), new LineTo(8, 10), // right leg
             new MoveTo(-7, 7), new LineTo(7, 7) // crossbar
             );
+
     ship.setFill(Color.TRANSPARENT);
     ship.setStroke(Color.WHITE);
     ship.setStrokeWidth(2);
