@@ -69,8 +69,8 @@ public class MainApp extends GameApplication {
                   return;
                 }
 
-//                // Visual feedback to confirm collision detection
-//                FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
+                //                // Visual feedback to confirm collision detection
+                //                FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
                 lifeLost(pc);
                 // Trigger ship explosion animation
 
@@ -91,11 +91,12 @@ public class MainApp extends GameApplication {
 
     if (playerLives > 0) {
       // Respawn after explosion animation (1.5 seconds to match fragment lifetime)
-      FXGL.runOnce(() -> {
-        playerComp.respawn(640, 360); // Center of screen
-      }, javafx.util.Duration.seconds(1.5));
-    }
-    else {
+      FXGL.runOnce(
+          () -> {
+            playerComp.respawn(640, 360); // Center of screen
+          },
+          javafx.util.Duration.seconds(1.5));
+    } else {
       FXGL.getNotificationService().pushNotification("Game Over!");
     }
   }

@@ -1,7 +1,6 @@
 package za.co.webber.asteroidsfxgl.components;
 
 import com.almasb.fxgl.core.math.Vec2;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
@@ -59,7 +58,9 @@ public class PlayerComponent extends Component {
       } else {
         // Blink effect during invincibility
         double blinkFreq = 8.0; // blinks per second
-        entity.getViewComponent().setOpacity((Math.sin(invincibilityTimer * blinkFreq * Math.PI * 2) > 0) ? 1.0 : 0.3);
+        entity
+            .getViewComponent()
+            .setOpacity((Math.sin(invincibilityTimer * blinkFreq * Math.PI * 2) > 0) ? 1.0 : 0.3);
       }
     }
 
@@ -156,11 +157,11 @@ public class PlayerComponent extends Component {
     entity.getViewComponent().clearChildren();
 
     // Recreate ship visuals
-    Path ship = new Path(
-        new MoveTo(0, -12), new LineTo(-8, 10),
-        new MoveTo(0, -12), new LineTo(8, 10),
-        new MoveTo(-7, 7), new LineTo(7, 7)
-    );
+    Path ship =
+        new Path(
+            new MoveTo(0, -12), new LineTo(-8, 10),
+            new MoveTo(0, -12), new LineTo(8, 10),
+            new MoveTo(-7, 7), new LineTo(7, 7));
     ship.setFill(Color.TRANSPARENT);
     ship.setStroke(Color.WHITE);
     ship.setStrokeWidth(2);
