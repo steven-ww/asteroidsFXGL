@@ -1,14 +1,23 @@
 package za.co.webber.asteroidsfxgl.components;
 
 import com.almasb.fxgl.core.math.Vec2;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.StrokeLineCap;
 
 public class PlayerComponent extends Component {
 
   private final Vec2 velocity = new Vec2(0, 0);
   private final Polyline thrustFlame;
   private boolean exploded = false;
+  private boolean invincible = false;
+  private double invincibilityTimer = 0;
+  private static final double INVINCIBILITY_DURATION = 3.0; // 3 seconds like original
 
   public PlayerComponent(Polyline thrustFlame) {
     this.thrustFlame = thrustFlame;
@@ -39,6 +48,21 @@ public class PlayerComponent extends Component {
   @Override
   public void onUpdate(double tpf) {
     if (exploded) return;
+
+    // Handle invincibility timer and blinking
+    if (invincible) {
+      invincibilityTimer += tpf;
+      if (invincibilityTimer >= INVINCIBILITY_DURATION) {
+        invincible = false;
+        invincibilityTimer = 0;
+        entity.getViewComponent().setOpacity(1.0);
+      } else {
+        // Blink effect during invincibility
+        double blinkFreq = 8.0; // blinks per second
+        entity.getViewComponent().setOpacity((Math.sin(invincibilityTimer * blinkFreq * Math.PI * 2) > 0) ? 1.0 : 0.3);
+      }
+    }
+
     entity.translate(velocity);
     if (entity.getX() < 0) {
       entity.setX(1280);
@@ -51,6 +75,10 @@ public class PlayerComponent extends Component {
     } else if (entity.getY() > 720) {
       entity.setY(0);
     }
+  }
+
+  public boolean isInvincible() {
+    return invincible;
   }
 
   public void explode() {
@@ -121,5 +149,45 @@ public class PlayerComponent extends Component {
             .buildAndAttach();
     frag.setRotation(entity.getRotation());
     frag.addComponent(new DriftAndFadeComponent(velocity, spinDegPerSec, lifeSeconds));
+  }
+
+  public void respawn(double x, double y) {
+    // Clear any explosion fragments
+    entity.getViewComponent().clearChildren();
+
+    // Recreate ship visuals
+    Path ship = new Path(
+        new MoveTo(0, -12), new LineTo(-8, 10),
+        new MoveTo(0, -12), new LineTo(8, 10),
+        new MoveTo(-7, 7), new LineTo(7, 7)
+    );
+    ship.setFill(Color.TRANSPARENT);
+    ship.setStroke(Color.WHITE);
+    ship.setStrokeWidth(2);
+    ship.setStrokeLineCap(StrokeLineCap.ROUND);
+
+    entity.getViewComponent().addChild(ship);
+    entity.getViewComponent().addChild(thrustFlame);
+
+    // Reset position and velocity
+    entity.setPosition(x, y);
+    entity.setRotation(0);
+    velocity.set(0, 0);
+
+    // Reset state
+    exploded = false;
+    thrustFlame.setVisible(false);
+
+    // Enable invincibility
+    invincible = true;
+    invincibilityTimer = 0;
+
+    // Re-enable collisions (but they'll be ignored while invincible)
+    try {
+      com.almasb.fxgl.entity.components.CollidableComponent cc =
+          entity.getComponent(com.almasb.fxgl.entity.components.CollidableComponent.class);
+      cc.setValue(true);
+    } catch (Exception ignored) {
+    }
   }
 }

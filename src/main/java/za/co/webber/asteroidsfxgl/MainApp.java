@@ -62,11 +62,18 @@ public class MainApp extends GameApplication {
             new CollisionHandler(EntityType.PLAYER, EntityType.ASTEROID) {
               @Override
               protected void onCollisionBegin(Entity player, Entity asteroid) {
-                // Visual feedback to confirm collision detection
-                FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
-                FXGL.getNotificationService().pushNotification("Ship hit!");
+                PlayerComponent pc = player.getComponent(PlayerComponent.class);
+
+                // Ignore collision during invincibility
+                if (pc.isInvincible()) {
+                  return;
+                }
+
+//                // Visual feedback to confirm collision detection
+//                FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
+                lifeLost(pc);
                 // Trigger ship explosion animation
-                player.getComponentOptional(PlayerComponent.class).ifPresent(pc -> lifeLost(pc));
+
               }
 
               @Override
@@ -81,6 +88,16 @@ public class MainApp extends GameApplication {
     playerComp.explode();
     playerLives--;
     drawLives(playerLives);
+
+    if (playerLives > 0) {
+      // Respawn after explosion animation (1.5 seconds to match fragment lifetime)
+      FXGL.runOnce(() -> {
+        playerComp.respawn(640, 360); // Center of screen
+      }, javafx.util.Duration.seconds(1.5));
+    }
+    else {
+      FXGL.getNotificationService().pushNotification("Game Over!");
+    }
   }
 
   @Override
