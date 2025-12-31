@@ -1,5 +1,6 @@
 package za.co.webber.asteroidsfxgl;
 
+import static java.lang.Math.min;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawLives;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawScore;
 
@@ -8,6 +9,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.Vec2;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
@@ -16,7 +18,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import za.co.webber.asteroidsfxgl.components.AsteroidComponent;
 import za.co.webber.asteroidsfxgl.components.AsteroidFactory;
+import za.co.webber.asteroidsfxgl.components.AsteroidSize;
 import za.co.webber.asteroidsfxgl.components.BulletFactory;
 import za.co.webber.asteroidsfxgl.components.PlayerComponent;
 import za.co.webber.asteroidsfxgl.components.PlayerFactory;
@@ -26,6 +30,9 @@ public class MainApp extends GameApplication {
   private PlayerComponent playerComp;
   private int playerLives = 3;
   private int score = 0;
+  private int level = 0;
+  private int asteroidCount = 4;
+  private static final int MAX_ASTEROIDS = 10;
 
   @Override
   protected void initSettings(GameSettings settings) {
@@ -54,8 +61,13 @@ public class MainApp extends GameApplication {
     drawLives(playerLives);
     drawScore(score);
 
-    // spawn a large asteroid off-screen drifting inward
-    spawnLargeAsteroidOffscreen();
+    spawnLevelAsteroids(level * 2 + 4);
+  }
+
+  private void spawnLevelAsteroids(int count) {
+    for (int i = 0; i < count; i++) {
+      spawnLargeAsteroidOffscreen();
+    }
   }
 
   @Override
@@ -85,6 +97,25 @@ public class MainApp extends GameApplication {
                 FXGL.getGameScene().setBackgroundColor(Color.BLACK);
               }
             });
+
+    // Bullet hits asteroid: destroy both, split asteroid by size, and add score
+    FXGL.getPhysicsWorld()
+        .addCollisionHandler(
+            new CollisionHandler(EntityType.BULLET, EntityType.ASTEROID) {
+              @Override
+              protected void onCollisionBegin(Entity bullet, Entity asteroid) {
+                AsteroidComponent comp = asteroid.getComponent(AsteroidComponent.class);
+                AsteroidSize size = comp.getSize();
+
+                double x = asteroid.getX();
+                double y = asteroid.getY();
+
+                bullet.removeFromWorld();
+                asteroid.removeFromWorld();
+
+                handleAsteroidDestroyed(size, x, y);
+              }
+            });
   }
 
   private void lifeLost(PlayerComponent playerComp) {
@@ -102,6 +133,40 @@ public class MainApp extends GameApplication {
     } else {
       FXGL.getNotificationService().pushNotification("Game Over!");
     }
+  }
+
+  private void handleAsteroidDestroyed(AsteroidSize size, double x, double y) {
+    asteroidCount--;
+    switch (size) {
+      case LARGE -> {
+        addScore(20);
+        spawnAsteroidChildren(AsteroidSize.MEDIUM, x, y, 2);
+      }
+      case MEDIUM -> {
+        addScore(50);
+        spawnAsteroidChildren(AsteroidSize.SMALL, x, y, 2);
+      }
+      case SMALL -> addScore(100);
+    }
+    if (asteroidCount == 0) {
+      level++;
+      playerLives++;
+      drawLives(playerLives);
+      spawnLevelAsteroids(min(level * 2 + 4, MAX_ASTEROIDS));
+    }
+  }
+
+  private void spawnAsteroidChildren(AsteroidSize childSize, double x, double y, int count) {
+    for (int i = 0; i < count; i++) {
+      asteroidCount++;
+      SpawnData data = new SpawnData(x, y).put("size", childSize);
+      FXGL.spawn("asteroid", data);
+    }
+  }
+
+  private void addScore(int delta) {
+    score += delta;
+    drawScore(score);
   }
 
   @Override
