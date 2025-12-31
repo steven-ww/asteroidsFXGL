@@ -6,6 +6,8 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import za.co.webber.asteroidsfxgl.EntityType;
@@ -43,7 +45,8 @@ public class AsteroidFactory implements EntityFactory {
 
     return FXGL.entityBuilder(data)
         .type(EntityType.ASTEROID)
-        .viewWithBBox(rock)
+        .view(rock)
+        .bbox(new HitBox("ASTEROID", BoundingShape.circle(size.getRadius())))
         .with(new CollidableComponent(true))
         .with(new AsteroidComponent(size))
         .build();

@@ -1,5 +1,6 @@
 package za.co.webber.asteroidsfxgl;
 
+import static java.lang.Math.min;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawLives;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawScore;
 
@@ -31,6 +32,7 @@ public class MainApp extends GameApplication {
   private int score = 0;
   private int level = 0;
   private int asteroidCount = 4;
+  private static final int MAX_ASTEROIDS = 10;
 
   @Override
   protected void initSettings(GameSettings settings) {
@@ -150,7 +152,7 @@ public class MainApp extends GameApplication {
       level++;
       playerLives++;
       drawLives(playerLives);
-      spawnLevelAsteroids(level * 2 + 4);
+      spawnLevelAsteroids(min(level * 2 + 4, MAX_ASTEROIDS));
     }
   }
 
