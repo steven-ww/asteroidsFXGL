@@ -7,8 +7,15 @@ import javafx.geometry.Point2D;
 
 public class AsteroidComponent extends Component {
 
+  private final AsteroidSize size;
+
   private Point2D velocity; // pixels per second
   private double spin; // degrees per second
+  private double wrapMargin; // size-dependent margin for off-screen wrapping
+
+  public AsteroidComponent(AsteroidSize size) {
+    this.size = size;
+  }
 
   @Override
   public void onAdded() {
@@ -24,10 +31,30 @@ public class AsteroidComponent extends Component {
     double angleJitter = rnd(-25, 25); // degrees
     Point2D jittered = rotate(dirToCenter, Math.toRadians(angleJitter));
 
-    double speed = rnd(60, 120);
+    // Base speed range roughly matches the original large asteroid behavior
+    double baseMinSpeed = 60;
+    double baseMaxSpeed = 120;
+    double speedMult;
+    switch (size) {
+      case LARGE -> speedMult = 1.0;
+      case MEDIUM -> speedMult = 1.4;
+      case SMALL -> speedMult = 1.9;
+      default -> speedMult = 1.0;
+    }
+
+    double speed = rnd(baseMinSpeed * speedMult, baseMaxSpeed * speedMult);
     velocity = jittered.multiply(speed);
 
     spin = rnd(-40, 40);
+
+    // Larger asteroids wrap with a larger off-screen margin so they don't pop
+    wrapMargin =
+        switch (size) {
+          case LARGE -> 36.0;
+          case MEDIUM -> 26.0;
+          case SMALL -> 18.0;
+          default -> 36.0;
+        };
   }
 
   @Override
@@ -42,7 +69,7 @@ public class AsteroidComponent extends Component {
     double h = FXGL.getAppHeight();
     double x = entity.getX();
     double y = entity.getY();
-    double m = 36; // margin
+    double m = wrapMargin;
 
     if (x < -m) entity.setX(w + m);
     else if (x > w + m) entity.setX(-m);
@@ -53,6 +80,10 @@ public class AsteroidComponent extends Component {
 
   private static double rnd(double min, double max) {
     return ThreadLocalRandom.current().nextDouble(min, max);
+  }
+
+  public AsteroidSize getSize() {
+    return size;
   }
 
   private static Point2D rotate(Point2D v, double angleRad) {

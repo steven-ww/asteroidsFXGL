@@ -1,6 +1,7 @@
 package za.co.webber.asteroidsfxgl.components;
 
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -28,6 +29,7 @@ public class BulletFactory {
             .type(za.co.webber.asteroidsfxgl.EntityType.BULLET)
             .at(position)
             .viewWithBBox(bulletView)
+            .with(new CollidableComponent(true))
             .with(new BulletComponent(direction, shipVelocity))
             .build();
 
