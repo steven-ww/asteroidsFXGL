@@ -28,10 +28,6 @@ import za.co.webber.asteroidsfxgl.components.PlayerFactory;
 public class MainApp extends GameApplication {
 
   private PlayerComponent playerComp;
-  private int playerLives = 3;
-  private int score = 0;
-  private int level = 0;
-  private int asteroidCount = 4;
   private static final int MAX_ASTEROIDS = 10;
 
   @Override
@@ -58,14 +54,15 @@ public class MainApp extends GameApplication {
     FXGL.getGameWorld().addEntityFactory(new AsteroidFactory());
     Entity player = FXGL.spawn("player", 640, 360); // 640 360
     playerComp = player.getComponent(PlayerComponent.class);
-    drawLives(playerLives);
-    drawScore(score);
+    drawLives(FXGL.geti("lives"));
+    drawScore(FXGL.geti("score"));
 
-    spawnLevelAsteroids(level * 2 + 4);
+    spawnLevelAsteroids(FXGL.geti("level") * 2 + 4);
   }
 
   private void spawnLevelAsteroids(int count) {
     for (int i = 0; i < count; i++) {
+      FXGL.inc("asteroidCount", 1);
       spawnLargeAsteroidOffscreen();
     }
   }
@@ -84,17 +81,7 @@ public class MainApp extends GameApplication {
                   return;
                 }
 
-                //                // Visual feedback to confirm collision detection
-                //                FXGL.getGameScene().setBackgroundColor(Color.DARKRED);
                 lifeLost(pc);
-                // Trigger ship explosion animation
-
-              }
-
-              @Override
-              protected void onCollisionEnd(Entity player, Entity asteroid) {
-                // Restore normal background when no longer colliding
-                FXGL.getGameScene().setBackgroundColor(Color.BLACK);
               }
             });
 
@@ -120,10 +107,10 @@ public class MainApp extends GameApplication {
 
   private void lifeLost(PlayerComponent playerComp) {
     playerComp.explode();
-    playerLives--;
-    drawLives(playerLives);
+    FXGL.inc("lives", -1);
+    drawLives(FXGL.geti("lives"));
 
-    if (playerLives > 0) {
+    if (FXGL.geti("lives") > 0) {
       // Respawn after explosion animation (1.5 seconds to match fragment lifetime)
       FXGL.runOnce(
           () -> {
@@ -136,7 +123,7 @@ public class MainApp extends GameApplication {
   }
 
   private void handleAsteroidDestroyed(AsteroidSize size, double x, double y) {
-    asteroidCount--;
+    FXGL.inc("asteroidCount", -1);
     switch (size) {
       case LARGE -> {
         addScore(20);
@@ -148,25 +135,26 @@ public class MainApp extends GameApplication {
       }
       case SMALL -> addScore(100);
     }
-    if (asteroidCount == 0) {
-      level++;
-      playerLives++;
-      drawLives(playerLives);
-      spawnLevelAsteroids(min(level * 2 + 4, MAX_ASTEROIDS));
+    if (FXGL.geti("asteroidCount") == 0) {
+      FXGL.inc("level", 1);
+      FXGL.inc("lives", 1);
+      drawLives(FXGL.geti("lives"));
+      int currentLevel = FXGL.geti("level");
+      spawnLevelAsteroids(min(currentLevel * 2 + 4, MAX_ASTEROIDS));
     }
   }
 
   private void spawnAsteroidChildren(AsteroidSize childSize, double x, double y, int count) {
     for (int i = 0; i < count; i++) {
-      asteroidCount++;
+      FXGL.inc("asteroidCount", 1);
       SpawnData data = new SpawnData(x, y).put("size", childSize);
       FXGL.spawn("asteroid", data);
     }
   }
 
   private void addScore(int delta) {
-    score += delta;
-    drawScore(score);
+    FXGL.inc("score", delta);
+    drawScore(FXGL.geti("score"));
   }
 
   @Override
@@ -230,9 +218,19 @@ public class MainApp extends GameApplication {
             KeyCode.SPACE);
   }
 
+  /**
+   * Initializes game variables that are accessible globally via FXGL.get*() methods.
+   * These variables can be used for cross-class access, UI data binding, and save/load functionality.
+   *
+   * @param vars Map to populate with initial game state variables
+   */
   @Override
   protected void initGameVars(Map<String, Object> vars) {
     vars.put("pixelsMoved", 0);
+    vars.put("lives", 3);
+    vars.put("score", 0);
+    vars.put("level", 0);
+    vars.put("asteroidCount", 0);
   }
 
   private void spawnLargeAsteroidOffscreen() {
@@ -265,7 +263,7 @@ public class MainApp extends GameApplication {
     FXGL.spawn("asteroid", x, y);
   }
 
-  public static void main(String[] args) {
+  void main(String[] args) {
     launch(args);
   }
 }
