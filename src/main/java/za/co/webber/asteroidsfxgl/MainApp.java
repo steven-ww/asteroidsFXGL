@@ -219,8 +219,8 @@ public class MainApp extends GameApplication {
   }
 
   /**
-   * Initializes game variables that are accessible globally via FXGL.get*() methods.
-   * These variables can be used for cross-class access, UI data binding, and save/load functionality.
+   * Initializes game variables that are accessible globally via FXGL.get*() methods. These
+   * variables can be used for cross-class access, UI data binding, and save/load functionality.
    *
    * @param vars Map to populate with initial game state variables
    */
