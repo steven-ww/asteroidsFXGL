@@ -3,6 +3,7 @@ package za.co.webber.asteroidsfxgl;
 import static java.lang.Math.min;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawLives;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawScore;
+import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawHighScore;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
@@ -13,7 +14,12 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
-import java.util.Map;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -56,6 +62,7 @@ public class MainApp extends GameApplication {
     playerComp = player.getComponent(PlayerComponent.class);
     drawLives(FXGL.geti("lives"));
     drawScore(FXGL.geti("score"));
+    drawHighScore();
 
     spawnLevelAsteroids(FXGL.geti("level") * 2 + 4);
   }
@@ -155,6 +162,10 @@ public class MainApp extends GameApplication {
   private void addScore(int delta) {
     FXGL.inc("score", delta);
     drawScore(FXGL.geti("score"));
+    if (FXGL.geti("score") > FXGL.geti("highScore")) {
+      FXGL.set("highScore", FXGL.geti("score"));
+      drawHighScore();
+    }
   }
 
   @Override
@@ -231,6 +242,28 @@ public class MainApp extends GameApplication {
     vars.put("score", 0);
     vars.put("level", 0);
     vars.put("asteroidCount", 0);
+    vars.put("highScore", getHighScore());
+  }
+
+  private int getHighScore() {
+    return getHighScores().values().stream().findFirst().orElse(0);
+  }
+
+  private Map<String, Integer> getHighScores() {
+    try {
+      List<String> allLines = Files.readAllLines(Path.of("highscore.txt"));
+      return allLines.stream()
+          .map(line -> line.split(","))
+          .collect(Collectors.toMap(
+              splitLine -> splitLine[0],
+              splitLine -> Integer.parseInt(splitLine[1]),
+              Math::max,
+              LinkedHashMap::new
+          ));
+    }
+    catch (Exception e) {
+      return Map.of();
+    }
   }
 
   private void spawnLargeAsteroidOffscreen() {

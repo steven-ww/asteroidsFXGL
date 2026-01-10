@@ -75,4 +75,28 @@ public class HudDisplay {
     scoreText.setUserData("SCORE");
     ui.addUINode(scoreText);
   }
+
+  public static void drawHighScore() {
+    var ui = FXGL.getGameScene();
+
+    // Clear old score display
+    List<Node> toRemove =
+        ui.getUINodes().stream().filter(n -> "HIGHSCORE".equals(n.getUserData())).toList();
+
+    toRemove.forEach(ui::removeUINode);
+
+    // Create score text in classic arcade style
+    Text scoreText = new Text(String.format("%02d", FXGL.geti("highScore")));
+    scoreText.setFill(Color.WHITE);
+    scoreText.setFont(Font.font("Monospaced", 24));
+
+    // Position in center
+    double textWidth = scoreText.getLayoutBounds().getWidth();
+    scoreText.setTranslateX(1280 / 2.0 - textWidth / 2.0);
+    scoreText.setTranslateY(HUD_MARGIN + 15);
+
+    scoreText.setUserData("HIGHSCORE");
+    ui.addUINode(scoreText);
+
+  }
 }
