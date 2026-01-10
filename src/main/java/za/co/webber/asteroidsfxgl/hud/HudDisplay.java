@@ -121,7 +121,7 @@ public class HudDisplay {
     ui.addUINode(gameOverText);
   }
 
-  public static void showLeaderboard(List<?> scores) {
+  public static void showLeaderboard(List<String> scores) {
     var ui = FXGL.getGameScene();
 
     // Remove any existing game over UI if we are transitioning to leaderboard
@@ -140,12 +140,7 @@ public class HudDisplay {
     ui.addUINode(title);
 
     for (int i = 0; i < scores.size(); i++) {
-      Object scoreData = scores.get(i);
-      // We use reflection or just assume it's the right type to avoid tight coupling if possible,
-      // but here we know the structure from MainApp.
-      // Since it's a private record in MainApp, we might need a common interface or just pass formatted strings.
-      // Let's assume they are passed as pre-formatted strings for simplicity or use a generic approach.
-      String text = scoreData.toString(); // We'll format it in MainApp before passing
+      String text = scores.get(i);
       
       Text scoreText = new Text(text);
       scoreText.setFill(Color.WHITE);
