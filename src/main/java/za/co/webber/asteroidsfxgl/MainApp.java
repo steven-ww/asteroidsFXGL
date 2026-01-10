@@ -1,9 +1,9 @@
 package za.co.webber.asteroidsfxgl;
 
 import static java.lang.Math.min;
+import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawHighScore;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawLives;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawScore;
-import static za.co.webber.asteroidsfxgl.hud.HudDisplay.drawHighScore;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.showGameOver;
 import static za.co.webber.asteroidsfxgl.hud.HudDisplay.showLeaderboard;
 
@@ -16,12 +16,10 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -136,7 +134,7 @@ public class MainApp extends GameApplication {
     FXGL.set("isGameOver", true);
     // Stop all game logic/entities if necessary
     FXGL.getGameWorld().getEntitiesCopy().forEach(Entity::removeFromWorld);
-    
+
     showGameOver();
 
     int score = FXGL.geti("score");
@@ -145,30 +143,37 @@ public class MainApp extends GameApplication {
     boolean isHighScore = scores.size() < 10 || score > scores.get(scores.size() - 1).score();
 
     if (isHighScore) {
-      FXGL.getDialogService().showInputBox("New High Score! Enter 3 characters:",
-          (String name) -> {
-            String entryName = (name == null || name.trim().isEmpty()) ? "AAA" : name.toUpperCase();
-            if (entryName.length() > 3) {
-              entryName = entryName.substring(0, 3);
-            }
-            
-            scores.add(new ScoreData(entryName, score));
-            scores.sort(Comparator.comparingInt(ScoreData::score).reversed());
-            
-            List<ScoreData> topTen = scores.stream().limit(10).collect(Collectors.toList());
-            saveHighScores(topTen);
-            
-            showLeaderboard(topTen.stream()
-                .map(sd -> String.format("%-3s  %d", sd.name(), sd.score()))
-                .collect(Collectors.toList()));
-          });
+      FXGL.getDialogService()
+          .showInputBox(
+              "New High Score! Enter 3 characters:",
+              (String name) -> {
+                String entryName =
+                    (name == null || name.trim().isEmpty()) ? "AAA" : name.toUpperCase();
+                if (entryName.length() > 3) {
+                  entryName = entryName.substring(0, 3);
+                }
+
+                scores.add(new ScoreData(entryName, score));
+                scores.sort(Comparator.comparingInt(ScoreData::score).reversed());
+
+                List<ScoreData> topTen = scores.stream().limit(10).collect(Collectors.toList());
+                saveHighScores(topTen);
+
+                showLeaderboard(
+                    topTen.stream()
+                        .map(sd -> String.format("%-3s  %d", sd.name(), sd.score()))
+                        .collect(Collectors.toList()));
+              });
     } else {
-      FXGL.runOnce(() -> {
-          showLeaderboard(scores.stream()
-              .limit(10)
-              .map(sd -> String.format("%-3s  %d", sd.name(), sd.score()))
-              .collect(Collectors.toList()));
-      }, javafx.util.Duration.seconds(2));
+      FXGL.runOnce(
+          () -> {
+            showLeaderboard(
+                scores.stream()
+                    .limit(10)
+                    .map(sd -> String.format("%-3s  %d", sd.name(), sd.score()))
+                    .collect(Collectors.toList()));
+          },
+          javafx.util.Duration.seconds(2));
     }
   }
 
@@ -320,10 +325,11 @@ public class MainApp extends GameApplication {
 
   private void saveHighScores(List<ScoreData> scores) {
     try {
-      List<String> lines = scores.stream()
-          .limit(10)
-          .map(sd -> sd.name() + "," + sd.score())
-          .collect(Collectors.toList());
+      List<String> lines =
+          scores.stream()
+              .limit(10)
+              .map(sd -> sd.name() + "," + sd.score())
+              .collect(Collectors.toList());
       Files.write(Path.of("highscore.txt"), lines);
     } catch (Exception e) {
       e.printStackTrace();

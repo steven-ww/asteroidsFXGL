@@ -87,7 +87,8 @@ public class HudDisplay {
 
     // Clear Game Over / Leaderboard if they exist
     ui.getUINodes().stream()
-        .filter(n -> "GAME_OVER_UI".equals(n.getUserData()) || "LEADERBOARD_UI".equals(n.getUserData()))
+        .filter(
+            n -> "GAME_OVER_UI".equals(n.getUserData()) || "LEADERBOARD_UI".equals(n.getUserData()))
         .toList()
         .forEach(ui::removeUINode);
 
@@ -103,7 +104,6 @@ public class HudDisplay {
 
     scoreText.setUserData("HIGHSCORE");
     ui.addUINode(scoreText);
-
   }
 
   public static void showGameOver() {
@@ -141,7 +141,7 @@ public class HudDisplay {
 
     for (int i = 0; i < scores.size(); i++) {
       String text = scores.get(i);
-      
+
       Text scoreText = new Text(text);
       scoreText.setFill(Color.WHITE);
       scoreText.setFont(Font.font("Monospaced", 20));
